@@ -1,0 +1,29 @@
+name: CI
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+    workflow_dispatch:
+
+permissions:
+    contents: read
+
+jobs:
+    sdk:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: oven-sh/setup-bun@v2
+              with:
+                  bun-version: 1.4.1
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 24
+            - run: bun install
+            - run: bun run typecheck
+            - run: bun run build
+            - name: Verify ESM exports
+              run: node --input-type=module -e 'await import("mksdk")'
+            - name: Verify package contents
+              run: npm pack --dry-run

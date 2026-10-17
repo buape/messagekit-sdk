@@ -1,0 +1,49 @@
+{
+	"name": "mksdk",
+	"version": "0.1.0",
+	"main": "./dist/index.js",
+	"module": "./dist/index.js",
+	"devDependencies": {
+		"@types/react": "19",
+		"typescript": "5"
+	},
+	"peerDependencies": {
+		"react": ">=18"
+	},
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js"
+		}
+	},
+	"bugs": "https://github.com/buape/mksdk/issues",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/buape/mksdk.git"
+	},
+	"description": "Embed the MessageKit Discord message composer with React components, hooks, and typed events.",
+	"files": [
+		"dist",
+		"README.md",
+		"LICENSE"
+	],
+	"homepage": "https://www.messagekit.app",
+	"keywords": [
+		"messagekit",
+		"discord",
+		"composer",
+		"react",
+		"sdk"
+	],
+	"license": "MIT",
+	"publishConfig": {
+		"access": "public"
+	},
+	"scripts": {
+		"build": "tsc -p tsconfig.json",
+		"typecheck": "tsc -p tsconfig.json --noEmit",
+		"prepack": "bun run build"
+	},
+	"type": "module",
+	"types": "./dist/index.d.ts"
+}
