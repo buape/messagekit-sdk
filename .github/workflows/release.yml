@@ -1,0 +1,67 @@
+name: Release
+
+on:
+    push:
+        branches: [main, beta]
+    workflow_dispatch:
+
+permissions:
+    contents: read
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: false
+
+jobs:
+    publish:
+        if: github.repository == 'buape/messagekit-sdk' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/beta')
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            id-token: write
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  persist-credentials: false
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 24
+
+            - uses: oven-sh/setup-bun@v2
+              with:
+                  bun-version: 1.4.1
+
+            - run: bun install
+            - run: bun run typecheck
+            - run: bun run build
+
+            - name: Verify package imports
+              run: node --input-type=module -e 'await import("@buape/messagekit"); await import("@buape/messagekit/react")'
+
+            - name: Check release version
+              id: package
+              uses: actions/github-script@v7
+              with:
+                  script: |
+                      const { readFileSync } = require('node:fs')
+                      const { join } = require('node:path')
+                      const { name, version, repository } = JSON.parse(readFileSync(join(process.env.GITHUB_WORKSPACE, 'package.json'), 'utf8'))
+                      if (name !== '@buape/messagekit' || repository?.url !== 'git+https://github.com/buape/messagekit-sdk.git') {
+                          throw new Error('Unexpected SDK package or repository')
+                      }
+                      const beta = context.ref === 'refs/heads/beta'
+                      if (beta ? !/^0\.0\.0-beta-\d{14}$/.test(version) : !/^\d+\.\d+\.\d+$/.test(version)) {
+                          throw new Error(`Invalid SDK version ${version} for ${context.ref}`)
+                      }
+                      const response = await fetch(`https://registry.npmjs.org/${encodeURIComponent(name)}/${encodeURIComponent(version)}`)
+                      if (response.status !== 200 && response.status !== 404) {
+                          throw new Error(`npm version lookup failed: HTTP ${response.status}`)
+                      }
+                      core.setOutput('publish', response.status === 404 ? 'true' : 'false')
+                      core.setOutput('tag', beta ? 'beta' : 'latest')
+                      core.info(response.status === 200 ? `${name}@${version} is already published` : `Publishing ${name}@${version}`)
+
+            - name: Publish through OIDC
+              if: steps.package.outputs.publish == 'true'
+              run: npm publish --tag "${{ steps.package.outputs.tag }}"
