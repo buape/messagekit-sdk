@@ -1,6 +1,6 @@
 # @buape/messagekit
 
-## 0.0.0-beta-20261017224756
+## 0.0.0-beta-20261018173121
 
 ### Patch Changes
 

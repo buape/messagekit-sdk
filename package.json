@@ -1,6 +1,6 @@
 {
 	"name": "@buape/messagekit",
-	"version": "0.0.0-beta-20261017224756",
+	"version": "0.0.0-beta-20261018173121",
 	"main": "./dist/index.js",
 	"module": "./dist/index.js",
 	"devDependencies": {
