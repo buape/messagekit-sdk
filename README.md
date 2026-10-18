@@ -1,6 +1,6 @@
 # @buape/messagekit
 
-Add a Discord Components V2 message builder to your app with [MessageKit](https://www.messagekit.app). Embed the visual editor with plain JavaScript or React so users can build messages without writing JSON. The SDK returns the finished draft for your app to save or send to Discord.
+Add a Discord Components V2 message builder to your app with [Message Kit](https://www.messagekit.app). Embed the visual editor with plain JavaScript or React so users can build messages without writing JSON. The SDK returns the finished draft for your app to save or send to Discord.
 
 ## Install
 
@@ -160,7 +160,7 @@ const session = await createComposerSession({
 })
 ```
 
-MessageKit sends a JSON `POST` with the same event shape used by iframe messages. A `saved` event includes `draft`; `cancelled` omits it. A non-2xx response fails the operation so the user can retry.
+Message Kit sends a JSON `POST` with the same event shape used by iframe messages. A `saved` event includes `draft`; `cancelled` omits it. A non-2xx response fails the operation so the user can retry.
 
 Requests include `X-MessageKit-Event` and `X-MessageKit-Composer-Session-Id`. These are not authentication signatures. Protect your endpoint, check the expected session and state, and handle duplicate requests.
 
