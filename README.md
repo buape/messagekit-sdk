@@ -146,6 +146,8 @@ const options = {
 
 Changing session inputs in the React component starts a new session. Remount it to start over with the same inputs.
 
+A session expires about 30 minutes after the last edit in the editor. If a save fails because the session expired, the `expired` event includes the unsaved `draft`. Pass it as `prefill` to a new session to let the user continue.
+
 ### Standalone links and webhooks
 
 A session's `iframeUrl` also works as a standalone link. Supply `webhookUrl` to receive saves and cancellations on your server:
@@ -168,15 +170,15 @@ Requests include `X-MessageKit-Event` and `X-MessageKit-Composer-Session-Id`. Th
 
 Events include `type: "messagekit:composer"`, `event`, `composerSessionId`, and optional `state` and `diagnostics`.
 
-| Event       | React callback | Data                 |
-| ----------- | -------------- | -------------------- |
-| `ready`     | `onReady`      | Editor is ready      |
-| `change`    | `onChange`     | `draft`              |
-| `resize`    | `onEvent`      | `height`             |
-| `saved`     | `onSaved`      | `draft`              |
-| `cancelled` | `onCancelled`  | No additional fields |
-| `expired`   | `onExpired`    | No additional fields |
-| `error`     | `onError`      | `error`              |
+| Event       | React callback | Data                                                  |
+| ----------- | -------------- | ----------------------------------------------------- |
+| `ready`     | `onReady`      | Editor is ready                                       |
+| `change`    | `onChange`     | `draft`                                               |
+| `resize`    | `onEvent`      | `height`                                              |
+| `saved`     | `onSaved`      | `draft`                                               |
+| `cancelled` | `onCancelled`  | No additional fields                                  |
+| `expired`   | `onExpired`    | `draft` when a save fails because the session expired |
+| `error`     | `onError`      | `error`                                               |
 
 `onEvent` receives every accepted event. The JavaScript subscription and React hook check the message origin, session ID, and state before calling your handler.
 
